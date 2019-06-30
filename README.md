@@ -1,0 +1,2 @@
+# DocStore
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6f31088d57ce49348bae44a9e98709bd)](https://app.codacy.com/app/ArjunBhalodiya/DocStore?utm_source=github.com&utm_medium=referral&utm_content=ArjunBhalodiya/DocStore&utm_campaign=Badge_Grade_Dashboard)
