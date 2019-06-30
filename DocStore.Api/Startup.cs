@@ -7,6 +7,8 @@ using DocStore.Domain.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace DocStore.Api
 {
@@ -36,12 +38,12 @@ namespace DocStore.Api
             services.AddTransient<DatabaseHelper>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IUserManager, UserManager>();
-            
+
             // Add MVC services
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             //if (environment.IsDevelopment())
             app.UseDeveloperExceptionPage();
@@ -56,6 +58,9 @@ namespace DocStore.Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Equitrix Identity Server API - v1");
                 c.RoutePrefix = string.Empty;
             });
+
+            // Use sirilog
+            loggerFactory.AddSerilog();
 
             // Use MVC services
             app.UseStaticFiles();

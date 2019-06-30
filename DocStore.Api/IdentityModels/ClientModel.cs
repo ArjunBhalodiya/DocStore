@@ -1,6 +1,7 @@
 ﻿using IdentityServer4.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace DocStore.Api.IdentityModels
 {
@@ -44,7 +45,7 @@ namespace DocStore.Api.IdentityModels
                 case "device_flow":
                     return GrantTypes.DeviceFlow;
                 default:
-                    throw new Exception($"Invalid grant type {AllowedGrantTypes}");
+                    throw new InvalidDataException($"Invalid grant type {AllowedGrantTypes}");
             }
         }
     }

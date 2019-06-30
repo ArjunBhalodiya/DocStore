@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 
 namespace DocStore.Domain.Healper
 {
     public class DatabaseHelper
     {
+        private readonly ILogger<DatabaseHelper> logger;
         private readonly string connectionString = "Data Source=.\\;Initial Catalog=DocStoreDb;Integrated Security=True";
+
+        public DatabaseHelper(ILogger<DatabaseHelper> logger)
+        {
+            this.logger = logger;
+        }
 
         public int ExecuteQuery(string commandText, List<SqlParameter> sqlParameters)
         {
@@ -27,6 +34,7 @@ namespace DocStore.Domain.Healper
                 }
                 catch (Exception ex)
                 {
+                    logger.LogError(ex.Message, ex.StackTrace);
                     throw ex;
                 }
                 finally
@@ -59,6 +67,7 @@ namespace DocStore.Domain.Healper
                 }
                 catch (Exception ex)
                 {
+                    logger.LogError(ex.Message, ex.StackTrace);
                     throw ex;
                 }
                 finally

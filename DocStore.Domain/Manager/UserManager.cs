@@ -23,7 +23,9 @@ namespace DocStore.Domain.Manager
         {
             var user = userRepository.FindByUserId(userId);
             if (user == null)
+            {
                 return null;
+            }
 
             return new UserDm
             {
@@ -42,7 +44,9 @@ namespace DocStore.Domain.Manager
         {
             var user = userRepository.FindByUserEmailId(userEmailId);
             if (user == null)
+            {
                 return null;
+            }
 
             return new UserDm
             {
@@ -71,7 +75,9 @@ namespace DocStore.Domain.Manager
                 ModifiedOn = user.ModifiedOn
             });
             if (addedUser == null)
+            {
                 return null;
+            }
 
             return new UserDm
             {

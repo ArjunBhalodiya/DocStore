@@ -28,7 +28,9 @@ namespace DocStore.Domain.Repositories
 
                 var table = helper.ExecuteSelectQuery("uspValidateUser", sqlParameters);
                 if (table.Rows.Count == 0)
+                {
                     return false;
+                }
 
                 return true;
             }
@@ -49,7 +51,9 @@ namespace DocStore.Domain.Repositories
 
                 var table = helper.ExecuteSelectQuery("uspGetUser", sqlParameters);
                 if (table.Rows.Count == 0)
+                {
                     return null;
+                }
 
                 var dataRow = table.Rows[0];
                 return new User

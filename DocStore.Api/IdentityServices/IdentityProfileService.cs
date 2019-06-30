@@ -22,7 +22,9 @@ namespace DocStore.Api.IdentityServices
             var userId = context.Subject.GetSubjectId();
             var user = userManager.FindByUserId(userId);
             if (user == null)
+            {
                 return Task.FromResult(0);
+            }
 
             var claims = new List<Claim>
             {

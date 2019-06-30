@@ -21,17 +21,25 @@ namespace DocStore.Api.App_Config
         {
             var idServerConfigPath = Path.Combine(environment.ContentRootPath, $"identityServer.config.{environment.EnvironmentName}.json");
             if (!File.Exists(idServerConfigPath) && environment.IsDevelopment())
+            {
                 idServerConfigPath = Path.Combine(environment.ContentRootPath, $"identityServer.config.json");
+            }
 
             if (!File.Exists(idServerConfigPath))
-                throw new Exception($"IdentityServer configuration file not found at: {idServerConfigPath}");
+            {
+                throw new FileNotFoundException($"IdentityServer configuration file not found at: {idServerConfigPath}");
+            }
 
             var appConfigPath = Path.Combine(environment.ContentRootPath, $"appsettings.{environment.EnvironmentName}.json");
             if (!File.Exists(appConfigPath) && environment.IsDevelopment())
+            {
                 appConfigPath = Path.Combine(environment.ContentRootPath, $"appsettings.json");
+            }
 
             if (!File.Exists(appConfigPath))
-                throw new Exception($"IdentityServer settings file not found at: {appConfigPath}");
+            {
+                throw new FileNotFoundException($"IdentityServer settings file not found at: {appConfigPath}");
+            }
 
             try
             {
@@ -41,13 +49,12 @@ namespace DocStore.Api.App_Config
                 SetApiResources(idServerConfig);
                 SetIdentityResources(idServerConfig);
 
-                var appConfigJson = File.ReadAllText(appConfigPath);
                 var appConfig = JsonConvert.DeserializeObject<AppConfigurations>(idServerConfigJson);
                 SetAppConfigurations(appConfig);
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception($"Failed to deserialize IdentityServer configuration file: {ex.Message}");
+                throw;
             }
         }
 
@@ -112,7 +119,7 @@ namespace DocStore.Api.App_Config
             {
                 if (!Enum.TryParse(identityResource, out IdentityResourcesType identityResourcesType))
                 {
-                    throw new Exception($"Invalid Identity Resources Type in IdentityServer configuration.");
+                    throw new InvalidDataException($"Invalid Identity Resources Type in IdentityServer configuration.");
                 }
 
                 switch (identityResourcesType)
@@ -132,6 +139,8 @@ namespace DocStore.Api.App_Config
                     case IdentityResourcesType.Profile:
                         IdentityResources.Add(new IdentityResources.Profile());
                         break;
+                    default:
+                        throw new InvalidDataException($"Invalid identity resources type {identityResourcesType}");
                 }
             }
         }

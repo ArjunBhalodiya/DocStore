@@ -3,6 +3,7 @@ using DocStore.Api.ViewModels;
 using DocStore.Contract.Manager;
 using DocStore.Contract.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace DocStore.Api.Controllers
 {
@@ -10,11 +11,13 @@ namespace DocStore.Api.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserManager _userManager;
+        private readonly IUserManager userManager;
+        private readonly ILogger<UsersController> logger;
 
-        public UsersController(IUserManager userManager)
+        public UsersController(IUserManager userManager, ILogger<UsersController> logger)
         {
-            _userManager = userManager;
+            this.userManager = userManager;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -25,19 +28,22 @@ namespace DocStore.Api.Controllers
         /// <response code="200">If email address is registered in database return record.</response>
         /// <response code="204">If email address is not registered in database return null.</response> 
         /// <response code="500">If something goes wrong while fetching email address return null.</response>
-        [HttpGet("email/{emailId")]
+        [HttpGet("email/{emailId}")]
         public IActionResult GetUserByEmailId(string emailId)
         {
             try
             {
-                var user = _userManager.FindByUserEmailId(emailId);
+                var user = userManager.FindByUserEmailId(emailId);
                 if (user == null)
+                {
                     return NoContent();
+                }
 
                 return Ok(user);
             }
             catch (Exception ex)
             {
+                logger.LogError(ex.Message, ex.StackTrace);
                 return StatusCode(500, ex);
             }
         }
@@ -54,14 +60,17 @@ namespace DocStore.Api.Controllers
         {
             try
             {
-                var user = _userManager.FindByUserId(userId);
+                var user = userManager.FindByUserId(userId);
                 if (user == null)
+                {
                     return NoContent();
+                }
 
                 return Ok(user);
             }
             catch (Exception ex)
             {
+                logger.LogError(ex.Message, ex.StackTrace);
                 return StatusCode(500, ex);
             }
         }
@@ -74,16 +83,18 @@ namespace DocStore.Api.Controllers
         /// <response code="200">If added sucessfully in database return user record.</response>
         /// <response code="409">If user already exist in database return conflict.</response> 
         /// <response code="500">If something goes wrong while adding user in database return null.</response>
-        [HttpPost()]
+        [HttpPost]
         public IActionResult AddUser(AddUserRequestVm addUserRequestVm)
         {
             try
             {
-                var user = _userManager.FindByUserEmailId(addUserRequestVm.UserEmailId);
+                var user = userManager.FindByUserEmailId(addUserRequestVm.UserEmailId);
                 if (user != null)
+                {
                     return Conflict();
+                }
 
-                var addedUser = _userManager.AddUser(new UserDm
+                var addedUser = userManager.AddUser(new UserDm
                 {
                     UserEmailId = addUserRequestVm.UserEmailId,
                     UserGender = (short)addUserRequestVm.UserGender,
@@ -92,12 +103,15 @@ namespace DocStore.Api.Controllers
                 });
 
                 if (addedUser == null)
+                {
                     return StatusCode(500);
+                }
 
                 return Ok(addedUser);
             }
             catch (Exception ex)
             {
+                logger.LogError(ex.Message, ex.StackTrace);
                 return StatusCode(500, ex.Message);
             }
         }
