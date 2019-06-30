@@ -5,6 +5,7 @@ using DocStore.Api.IdentityModels;
 using DocStore.Contract.Entities;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace DocStore.Api.App_Config
@@ -41,21 +42,14 @@ namespace DocStore.Api.App_Config
                 throw new FileNotFoundException($"IdentityServer settings file not found at: {appConfigPath}");
             }
 
-            try
-            {
-                var idServerConfigJson = File.ReadAllText(idServerConfigPath);
-                var idServerConfig = JsonConvert.DeserializeObject<ConfigurationModel>(idServerConfigJson);
-                SetClients(idServerConfig);
-                SetApiResources(idServerConfig);
-                SetIdentityResources(idServerConfig);
+            var idServerConfigJson = File.ReadAllText(idServerConfigPath);
+            var idServerConfig = JsonConvert.DeserializeObject<ConfigurationModel>(idServerConfigJson);
+            SetClients(idServerConfig);
+            SetApiResources(idServerConfig);
+            SetIdentityResources(idServerConfig);
 
-                var appConfig = JsonConvert.DeserializeObject<AppConfigurations>(idServerConfigJson);
-                SetAppConfigurations(appConfig);
-            }
-            catch
-            {
-                throw;
-            }
+            var appConfig = JsonConvert.DeserializeObject<AppConfigurations>(idServerConfigJson);
+            SetAppConfigurations(appConfig);
         }
 
         public static IEnumerable<Client> GetClients()

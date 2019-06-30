@@ -45,8 +45,10 @@ namespace DocStore.Api
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            //if (environment.IsDevelopment())
-            app.UseDeveloperExceptionPage();
+            if (environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
             // Use identity server services
             app.UseIdentityServer();
