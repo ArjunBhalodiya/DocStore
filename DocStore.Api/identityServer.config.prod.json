@@ -1,0 +1,27 @@
+{
+  "apiResources": [
+    {
+      "name": "docStore.api",
+      "displayName": "docStore API"
+    }
+  ],
+  "identityResources": [
+    "OpenId",
+    "Profile"
+  ],
+  "clients": [
+    {
+      "clientId": "docStore.login",
+      "clientSecrets": "secret",
+      "allowedScopes": [
+        "openid",
+        "profile",
+        "docStore.api"
+      ],
+      "allowedGrantTypes": "password",
+      "allowOfflineAccess": false,
+      "requirePkce": false,
+      "requireClientSecret": false
+    }
+  ]
+}
