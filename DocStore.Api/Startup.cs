@@ -1,9 +1,4 @@
 ﻿using DocStore.Api.App_Config;
-using DocStore.Contract.Manager;
-using DocStore.Contract.Repositories;
-using DocStore.Domain.Healper;
-using DocStore.Domain.Manager;
-using DocStore.Domain.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,9 +18,10 @@ namespace DocStore.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // Configure and add identity server services
+            // Load configurations
             ConfigurationBuilder.Load(environment);
 
+            // Configure identity server services
             services.AddIdentityServer()
                     .AddInMemoryIdentityResources(ConfigurationBuilder.GetIdentityResources())
                     .AddInMemoryApiResources(ConfigurationBuilder.GetApiResources())
@@ -33,11 +29,11 @@ namespace DocStore.Api
                     .AddCustomUserStore()
                     .AddDeveloperSigningCredential();
 
+            // Configure swagger
             services.ConfigureSwagger();
 
-            services.AddTransient<DatabaseHelper>();
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IUserManager, UserManager>();
+            // Configure system level dependencies
+            services.AddDependencies();
 
             // Add MVC services
             services.AddMvc();
@@ -57,7 +53,7 @@ namespace DocStore.Api
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Equitrix Identity Server API - v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "DocStore API - v1");
                 c.RoutePrefix = string.Empty;
             });
 

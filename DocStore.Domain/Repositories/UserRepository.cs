@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using DocStore.Contract.Entities;
 using DocStore.Contract.Repositories;
-using DocStore.Domain.Healper;
+using DocStore.Domain.Helper;
 
 namespace DocStore.Domain.Repositories
 {

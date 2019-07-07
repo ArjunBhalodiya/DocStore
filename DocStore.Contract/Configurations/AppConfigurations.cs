@@ -2,7 +2,7 @@
 {
     public class AppConfigurations
     {
-        public static ConnectionString ConnectionStrings { get; set; }
+        public ConnectionString ConnectionStrings { get; set; }
     }
 
     public class ConnectionString

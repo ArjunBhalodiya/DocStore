@@ -4,15 +4,16 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
-namespace DocStore.Domain.Healper
+namespace DocStore.Domain.Helper
 {
     public class DatabaseHelper
     {
         private readonly ILogger<DatabaseHelper> logger;
-        private readonly string connectionString = "Data Source=.\\;Initial Catalog=DocStoreDb;Integrated Security=True";
+        private readonly string connectionString;
 
-        public DatabaseHelper(ILogger<DatabaseHelper> logger)
+        public DatabaseHelper(string connectionString, ILogger<DatabaseHelper> logger)
         {
+            this.connectionString = connectionString;
             this.logger = logger;
         }
 

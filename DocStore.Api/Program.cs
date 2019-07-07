@@ -10,14 +10,13 @@ namespace DocStore.Api
     {
         public static void Main(string[] args)
         {
-            Console.Title = "IdentityServer4";
+            Console.Title = "DocStore";
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("System", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
-                .Enrich.FromLogContext()
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
+                                                  .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                                                  .MinimumLevel.Override("System", LogEventLevel.Warning)
+                                                  .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
+                                                  .Enrich.FromLogContext()
                 .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day,
                                 outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
                 .CreateLogger();
