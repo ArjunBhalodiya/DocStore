@@ -80,7 +80,7 @@ namespace DocStore.Api.Controllers
         /// </summary>
         /// <param name="addUserRequestVm"></param>
         /// <returns>Returns added user.</returns>
-        /// <response code="200">If added sucessfully in database return user record.</response>
+        /// <response code="200">If added successfully in database return user record.</response>
         /// <response code="409">If user already exist in database return conflict.</response> 
         /// <response code="500">If something goes wrong while adding user in database return null.</response>
         [HttpPost]
