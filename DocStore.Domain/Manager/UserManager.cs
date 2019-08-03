@@ -2,16 +2,19 @@
 using DocStore.Contract.Manager;
 using DocStore.Contract.Models;
 using DocStore.Contract.Repositories;
+using DocStore.Domain.Helper;
 
 namespace DocStore.Domain.Manager
 {
     public class UserManager : IUserManager
     {
         private readonly IUserRepository userRepository;
+        private readonly EmailHelper emailHelper;
 
-        public UserManager(IUserRepository _userRepository)
+        public UserManager(IUserRepository _userRepository, EmailHelper _emailHelper)
         {
             userRepository = _userRepository;
+            emailHelper = _emailHelper;
         }
 
         public bool ValidateUser(string userEmailId, string password)
@@ -90,6 +93,23 @@ namespace DocStore.Domain.Manager
                 CreatedOn = addedUser.CreatedOn,
                 ModifiedOn = addedUser.ModifiedOn
             };
+        }
+
+        public bool SendEmailVerificationLink(UserDm user)
+        {
+            var token = userRepository.GetEmailVerificationToken(user.UserId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            return emailHelper.SendEmail(user.UserEmailId, string.Empty, string.Empty,
+                              "Verify Email | DocStore", $"http://localhost:7000/users/{user.UserId}/email/verify/{token}");
+        }
+
+        public bool ValidateEmailVerificationToken(string userId, string token)
+        {
+            return userRepository.ValidateEmailVerificationToken(userId, token);
         }
     }
 }

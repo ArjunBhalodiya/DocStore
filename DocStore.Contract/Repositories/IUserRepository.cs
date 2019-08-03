@@ -8,5 +8,7 @@ namespace DocStore.Contract.Repositories
         User FindByUserId(string userId);
         User FindByUserEmailId(string userEmailId);
         User AddUser(User user);
+        bool ValidateEmailVerificationToken(string userId, string token);
+        string GetEmailVerificationToken(string userId);
     }
 }

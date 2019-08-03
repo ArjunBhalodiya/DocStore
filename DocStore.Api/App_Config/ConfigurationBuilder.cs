@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using DocStore.Api.IdentityModels;
-using DocStore.Contract.Entities;
+using DocStore.Contract.Configurations;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace DocStore.Api.App_Config
@@ -48,7 +47,8 @@ namespace DocStore.Api.App_Config
             SetApiResources(idServerConfig);
             SetIdentityResources(idServerConfig);
 
-            var appConfig = JsonConvert.DeserializeObject<AppConfigurations>(idServerConfigJson);
+            var appConfigJson = File.ReadAllText(appConfigPath);
+            var appConfig = JsonConvert.DeserializeObject<AppConfigurations>(appConfigJson);
             SetAppConfigurations(appConfig);
         }
 

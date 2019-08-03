@@ -119,13 +119,53 @@ namespace DocStore.Domain.Repositories
                     new SqlParameter("@userProfilePicUrl", user.UserProfilePicUrl??string.Empty)
                 };
 
-                var insertedRecord = helper.ExecuteQuery("uspInsertUser", sqlParameters);
-                if (insertedRecord == 1)
-                {
-                    return FindByUserEmailId(user.UserEmailId);
-                }
+                helper.ExecuteQuery("uspInsertUser", sqlParameters);
+                return FindByUserEmailId(user.UserEmailId);
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
-                return null;
+        public bool ValidateEmailVerificationToken(string userId, string token)
+        {
+            try
+            {
+                var sqlParameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@userId", userId),
+                    new SqlParameter("@userToken", token)
+                };
+
+                var table = helper.ExecuteSelectQuery("uspVerifyEmailId", sqlParameters);
+                if (table.Rows.Count == 0)
+                    return false;
+
+                var dataRow = table.Rows[0];
+                return Convert.ToBoolean(dataRow[0]);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public string GetEmailVerificationToken(string userId)
+        {
+            try
+            {
+                var sqlParameters = new List<SqlParameter>
+                {
+                    new SqlParameter("@userId", userId)
+                };
+
+                var table = helper.ExecuteSelectQuery("uspGetToken", sqlParameters);
+                if (table.Rows.Count == 0)
+                    return null;
+
+                var dataRow = table.Rows[0];
+                return Convert.ToString(dataRow[0]);
             }
             catch
             {

@@ -80,7 +80,7 @@ namespace DocStore.Api.Controllers
         /// </summary>
         /// <param name="addUserRequestVm"></param>
         /// <returns>Returns added user.</returns>
-        /// <response code="200">If added successfully in database return user record.</response>
+        /// <response code="200">If added successfully in database, sent email verification link and return user record.</response>
         /// <response code="409">If user already exist in database return conflict.</response> 
         /// <response code="500">If something goes wrong while adding user in database return null.</response>
         [HttpPost]
@@ -107,7 +107,47 @@ namespace DocStore.Api.Controllers
                     return StatusCode(500);
                 }
 
+                if (!userManager.SendEmailVerificationLink(addedUser))
+                {
+                    return StatusCode(500);
+                }
+
                 return Ok(addedUser);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message, ex.StackTrace);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// This endpoint used to add user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="token"></param>
+        /// <returns>Returns added user.</returns>
+        /// <response code="200">If added successfully in database, sent email verification link and return user record.</response>
+        /// <response code="409">If user already exist in database return conflict.</response> 
+        /// <response code="500">If something goes wrong while adding user in database return null.</response>
+        [HttpGet("{userId}/email/verify/{token}")]
+        public IActionResult VerifyEmail(string userId, string token)
+        {
+            try
+            {
+                var user = userManager.FindByUserId(userId);
+                if (user == null)
+                {
+                    return BadRequest();
+                }
+
+                var verifyToken = userManager.ValidateEmailVerificationToken(userId, token);
+                if (!verifyToken)
+                {
+                    return BadRequest();
+                }
+
+                return Ok();
             }
             catch (Exception ex)
             {

@@ -15,7 +15,7 @@ namespace DocStore.Api.App_Config
             services.AddTransient(s => new DatabaseHelper(ConfigurationBuilder.GetAppConfigurations()
                                                                               .ConnectionStrings.DefaultConnection,
                                                           s.GetService<ILogger<DatabaseHelper>>()));
-
+            services.AddTransient(s => new EmailHelper(ConfigurationBuilder.GetAppConfigurations().EmailConfigurations));
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IUserManager, UserManager>();
             return services;

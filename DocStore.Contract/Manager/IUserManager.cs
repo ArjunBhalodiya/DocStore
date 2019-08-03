@@ -8,5 +8,7 @@ namespace DocStore.Contract.Manager
         UserDm FindByUserEmailId(string userEmailId);
         UserDm FindByUserId(string userId);
         UserDm AddUser(UserDm user);
+        bool SendEmailVerificationLink(UserDm user);
+        bool ValidateEmailVerificationToken(string userId, string token);
     }
 }
