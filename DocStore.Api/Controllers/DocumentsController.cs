@@ -1,12 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Net.Http.Headers;
+﻿using System.Net;
+using DocStore.Api.ViewModels;
 using DocStore.Contract.Manager;
 using DocStore.Contract.Models;
+using DocStore.Domain.Helper;
 using DocStore.Utility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace DocStore.Api.Controllers
 {
@@ -14,71 +13,53 @@ namespace DocStore.Api.Controllers
     [ApiController]
     public class DocumentsController : BaseController
     {
+        private readonly IHostingEnvironment environment;
         private readonly IDocumentManager documentManager;
-        private readonly ILogger<UsersController> logger;
-        private readonly IHostingEnvironment hostingEnvironment;
+        private readonly FileUploadHelper fileUploadHelper;
 
-        public DocumentsController(IDocumentManager documentManager, ILogger<UsersController> logger, IHostingEnvironment hostingEnvironment)
+        public DocumentsController(IHostingEnvironment _environment, IDocumentManager _documentManager, FileUploadHelper _fileUploadHelper)
         {
-            this.documentManager = documentManager;
-            this.logger = logger;
-            this.hostingEnvironment = hostingEnvironment;
+            environment = _environment;
+            documentManager = _documentManager;
+            fileUploadHelper = _fileUploadHelper;
         }
 
 
         /// <summary>
         /// This endpoint used to upload document.
         /// </summary>
-        /// <param name="directory"></param>
+        /// <param name="addDocumentRequestVm"></param>
         /// <returns>Returns uploaded document detail.</returns>
         /// <response code="200">If upload successfully, make entry in database return document detail.</response>
         /// <response code="409">If document already exist, return conflict.</response> 
         /// <response code="500">If something goes wrong while uploading document return null.</response>
         [HttpPost]
-        public IActionResult AddDocument([FromQuery]string directory)
+        public IActionResult AddDocument(AddDocumentRequestVm addDocumentRequestVm)
         {
-            try
+            var uploadResult = fileUploadHelper.UploadFile(environment.WebRootPath, CurrentUser.UserId, addDocumentRequestVm.Directory,
+                                                           addDocumentRequestVm.Version, addDocumentRequestVm.File);
+
+            if (uploadResult.Item1 == HttpStatusCode.Conflict)
             {
-                var file = Request.Form.Files[0];
-
-                if (file == null || file.Length == 0)
-                    return BadRequest();
-
-                var newPath = Path.Combine(hostingEnvironment.WebRootPath,
-                                           string.IsNullOrEmpty(directory) ? $"documents/{CurrentUser.UserId}"
-                                                                           : $"documents/{directory}/{CurrentUser.UserId}");
-                var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-                var fullPath = Path.Combine(newPath, fileName);
-
-                if (System.IO.File.Exists(fullPath))
-                {
-                    return Conflict();
-                }
-
-                if (!Directory.Exists(newPath))
-                {
-                    Directory.CreateDirectory(newPath);
-                }
-
-                using (var stream = new FileStream(fullPath, FileMode.Create))
-                {
-                    file.CopyTo(stream);
-                }
-
-                var documentDm = new DocumentDm
-                {
-                    DocumentName = fileName,
-                    DocumentOwnerId = CurrentUser.UserId,
-                    DocumentPath = fullPath
-                };
-
-                var addedDocument = documentManager.AddDocument(documentDm);
-                return Ok(addedDocument);
+                return Conflict();
             }
-            catch (Exception ex)
+
+            if (uploadResult.Item1 == HttpStatusCode.InternalServerError)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500);
             }
+
+            var filePath = uploadResult.Item2;
+            var documentDm = new DocumentDm
+            {
+                DocumentName = addDocumentRequestVm.File.FileName,
+                DocumentOwnerId = CurrentUser.UserId,
+                DocumentVersion = addDocumentRequestVm.Version,
+                DocumentPath = filePath
+            };
+
+            var addedDocument = documentManager.Add(documentDm);
+            return Ok(addedDocument);
         }
     }
 }

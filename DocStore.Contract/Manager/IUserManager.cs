@@ -4,10 +4,10 @@ namespace DocStore.Contract.Manager
 {
     public interface IUserManager
     {
-        bool ValidateUser(string userEmailId, string password);
+        bool Validate(string userEmailId, string password);
         UserDm FindByUserEmailId(string userEmailId);
         UserDm FindByUserId(string userId);
-        UserDm AddUser(UserDm user);
+        UserDm Add(UserDm user);
         bool SendEmailVerificationLink(UserDm user);
         bool ValidateEmailVerificationToken(string userId, string token);
     }

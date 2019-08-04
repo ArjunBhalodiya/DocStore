@@ -1,9 +1,7 @@
-﻿using System;
-using DocStore.Api.ViewModels;
+﻿using DocStore.Api.ViewModels;
 using DocStore.Contract.Manager;
 using DocStore.Contract.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace DocStore.Api.Controllers
 {
@@ -12,12 +10,10 @@ namespace DocStore.Api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserManager userManager;
-        private readonly ILogger<UsersController> logger;
 
-        public UsersController(IUserManager userManager, ILogger<UsersController> logger)
+        public UsersController(IUserManager _userManager)
         {
-            this.userManager = userManager;
-            this.logger = logger;
+            userManager = _userManager;
         }
 
         /// <summary>
@@ -31,21 +27,13 @@ namespace DocStore.Api.Controllers
         [HttpGet("email/{emailId}")]
         public IActionResult GetUserByEmailId(string emailId)
         {
-            try
+            var user = userManager.FindByUserEmailId(emailId);
+            if (user == null)
             {
-                var user = userManager.FindByUserEmailId(emailId);
-                if (user == null)
-                {
-                    return NoContent();
-                }
+                return NoContent();
+            }
 
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message, ex.StackTrace);
-                return StatusCode(500, ex);
-            }
+            return Ok(user);
         }
 
         /// <summary>
@@ -58,21 +46,13 @@ namespace DocStore.Api.Controllers
         [HttpGet("{userId}")]
         public IActionResult GetUserByUserId(string userId)
         {
-            try
+            var user = userManager.FindByUserId(userId);
+            if (user == null)
             {
-                var user = userManager.FindByUserId(userId);
-                if (user == null)
-                {
-                    return NoContent();
-                }
+                return NoContent();
+            }
 
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message, ex.StackTrace);
-                return StatusCode(500, ex);
-            }
+            return Ok(user);
         }
 
         /// <summary>
@@ -86,39 +66,31 @@ namespace DocStore.Api.Controllers
         [HttpPost]
         public IActionResult AddUser(AddUserRequestVm addUserRequestVm)
         {
-            try
+            var user = userManager.FindByUserEmailId(addUserRequestVm.UserEmailId);
+            if (user != null)
             {
-                var user = userManager.FindByUserEmailId(addUserRequestVm.UserEmailId);
-                if (user != null)
-                {
-                    return Conflict();
-                }
-
-                var addedUser = userManager.AddUser(new UserDm
-                {
-                    UserEmailId = addUserRequestVm.UserEmailId,
-                    UserGender = (short)addUserRequestVm.UserGender,
-                    UserEmailIdVerified = false,
-                    UserIsActive = true
-                });
-
-                if (addedUser == null)
-                {
-                    return StatusCode(500);
-                }
-
-                if (!userManager.SendEmailVerificationLink(addedUser))
-                {
-                    return StatusCode(500);
-                }
-
-                return Ok(addedUser);
+                return Conflict();
             }
-            catch (Exception ex)
+
+            var addedUser = userManager.Add(new UserDm
             {
-                logger.LogError(ex.Message, ex.StackTrace);
-                return StatusCode(500, ex.Message);
+                UserEmailId = addUserRequestVm.UserEmailId,
+                UserGender = (short)addUserRequestVm.UserGender,
+                UserEmailIdVerified = false,
+                UserIsActive = true
+            });
+
+            if (addedUser == null)
+            {
+                return StatusCode(500);
             }
+
+            if (!userManager.SendEmailVerificationLink(addedUser))
+            {
+                return StatusCode(500);
+            }
+
+            return Ok(addedUser);
         }
 
         /// <summary>
@@ -133,27 +105,19 @@ namespace DocStore.Api.Controllers
         [HttpGet("{userId}/email/verify/{token}")]
         public IActionResult VerifyEmail(string userId, string token)
         {
-            try
+            var user = userManager.FindByUserId(userId);
+            if (user == null)
             {
-                var user = userManager.FindByUserId(userId);
-                if (user == null)
-                {
-                    return BadRequest();
-                }
-
-                var verifyToken = userManager.ValidateEmailVerificationToken(userId, token);
-                if (!verifyToken)
-                {
-                    return BadRequest();
-                }
-
-                return Ok();
+                return BadRequest();
             }
-            catch (Exception ex)
+
+            var verifyToken = userManager.ValidateEmailVerificationToken(userId, token);
+            if (!verifyToken)
             {
-                logger.LogError(ex.Message, ex.StackTrace);
-                return StatusCode(500, ex.Message);
+                return BadRequest();
             }
+
+            return Ok();
         }
     }
 }

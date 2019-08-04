@@ -17,9 +17,9 @@ namespace DocStore.Domain.Manager
             emailHelper = _emailHelper;
         }
 
-        public bool ValidateUser(string userEmailId, string password)
+        public bool Validate(string userEmailId, string password)
         {
-            return userRepository.ValidateUser(userEmailId, password);
+            return userRepository.Validate(userEmailId, password);
         }
 
         public UserDm FindByUserId(string userId)
@@ -64,9 +64,9 @@ namespace DocStore.Domain.Manager
             };
         }
 
-        public UserDm AddUser(UserDm user)
+        public UserDm Add(UserDm user)
         {
-            var addedUser = userRepository.AddUser(new User
+            var addedUser = userRepository.Add(new User
             {
                 UserId = user.UserId,
                 UserEmailId = user.UserEmailId,
@@ -98,12 +98,12 @@ namespace DocStore.Domain.Manager
         public bool SendEmailVerificationLink(UserDm user)
         {
             var token = userRepository.GetEmailVerificationToken(user.UserId);
-            if (user == null)
+            if (token == null)
             {
                 return false;
             }
 
-            return emailHelper.SendEmail(user.UserEmailId, string.Empty, string.Empty,
+            return emailHelper.SendEmail(user.UserEmailId, null, null,
                               "Verify Email | DocStore", $"http://localhost:7000/users/{user.UserId}/email/verify/{token}");
         }
 

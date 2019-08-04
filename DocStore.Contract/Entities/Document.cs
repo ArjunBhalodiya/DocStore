@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace DocStore.Contract.Models
+namespace DocStore.Contract.Entities
 {
-    public class DocumentDm
+    public class Document
     {
         public string DocumentId { get; set; }
         public string DocumentName { get; set; }

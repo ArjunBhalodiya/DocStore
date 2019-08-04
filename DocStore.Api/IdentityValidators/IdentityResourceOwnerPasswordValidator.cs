@@ -17,7 +17,7 @@ namespace DocStore.Api.IdentityValidators
 
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            if (userManager.ValidateUser(context.UserName, context.Password))
+            if (userManager.Validate(context.UserName, context.Password))
             {
                 var user = userManager.FindByUserEmailId(context.UserName);
                 context.Result = user == null ? new GrantValidationResult(TokenRequestErrors.InvalidRequest, "Invalid user.")

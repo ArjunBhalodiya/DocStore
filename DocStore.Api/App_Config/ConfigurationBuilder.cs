@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace DocStore.Api.App_Config
 {
-    public class ConfigurationBuilder
+    public static class ConfigurationBuilder
     {
         private static AppConfigurations AppConfigurations { get; set; }
         private static List<Client> Clients { get; set; }

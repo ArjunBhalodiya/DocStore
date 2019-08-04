@@ -4,19 +4,22 @@ using System.Data.SqlClient;
 using DocStore.Contract.Entities;
 using DocStore.Contract.Repositories;
 using DocStore.Domain.Helper;
+using Microsoft.Extensions.Logging;
 
 namespace DocStore.Domain.Repositories
 {
     public class UserRepository : IUserRepository
     {
         private readonly DatabaseHelper helper;
+        private readonly ILogger<UserRepository> logger;
 
-        public UserRepository(DatabaseHelper helper)
+        public UserRepository(DatabaseHelper _helper, ILogger<UserRepository> _logger)
         {
-            this.helper = helper;
+            helper = _helper;
+            logger = _logger;
         }
 
-        public bool ValidateUser(string userEmailId, string userPassword)
+        public bool Validate(string userEmailId, string userPassword)
         {
             try
             {
@@ -34,9 +37,10 @@ namespace DocStore.Domain.Repositories
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                logger.LogError(ex, ex.Message);
+                return false;
             }
         }
 
@@ -68,9 +72,10 @@ namespace DocStore.Domain.Repositories
                     ModifiedOn = Convert.ToDateTime(dataRow["modifiedOn"])
                 };
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                logger.LogError(ex, ex.Message);
+                return null;
             }
         }
 
@@ -85,7 +90,9 @@ namespace DocStore.Domain.Repositories
 
                 var table = helper.ExecuteSelectQuery("uspGetUser", sqlParameters);
                 if (table.Rows.Count == 0)
+                {
                     return null;
+                }
 
                 var dataRow = table.Rows[0];
                 return new User
@@ -100,13 +107,14 @@ namespace DocStore.Domain.Repositories
                     ModifiedOn = Convert.ToDateTime(dataRow["modifiedOn"])
                 };
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                logger.LogError(ex, ex.Message);
+                return null;
             }
         }
 
-        public User AddUser(User user)
+        public User Add(User user)
         {
             try
             {
@@ -122,9 +130,10 @@ namespace DocStore.Domain.Repositories
                 helper.ExecuteQuery("uspInsertUser", sqlParameters);
                 return FindByUserEmailId(user.UserEmailId);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                logger.LogError(ex, ex.Message);
+                return null;
             }
         }
 
@@ -140,14 +149,17 @@ namespace DocStore.Domain.Repositories
 
                 var table = helper.ExecuteSelectQuery("uspVerifyEmailId", sqlParameters);
                 if (table.Rows.Count == 0)
+                {
                     return false;
+                }
 
                 var dataRow = table.Rows[0];
                 return Convert.ToBoolean(dataRow[0]);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                logger.LogError(ex, ex.Message);
+                return false;
             }
         }
 
@@ -162,14 +174,17 @@ namespace DocStore.Domain.Repositories
 
                 var table = helper.ExecuteSelectQuery("uspGetToken", sqlParameters);
                 if (table.Rows.Count == 0)
+                {
                     return null;
+                }
 
                 var dataRow = table.Rows[0];
                 return Convert.ToString(dataRow[0]);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                logger.LogError(ex, ex.Message);
+                return null;
             }
         }
     }
