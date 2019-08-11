@@ -1,31 +1,56 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+  <div class="wrapper">
+    <div class="sidebar" data-color="azure" data-background-color="white">
+      <div class="logo">
+        <router-link to="http://www.creative-tim.com" class="simple-text logo-normal">DocStore</router-link>
+      </div>
+      <div class="sidebar-wrapper">
+        <ul class="nav">
+          <li class="nav-item active">
+            <router-link class="nav-link" to="/">
+              <i class="material-icons"></i>
+              <p>My Drive</p>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/shared-with-me">
+              <i class="material-icons"></i>
+              <p>Shared With Me</p>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/recent">
+              <i class="material-icons"></i>
+              <p>Recent</p>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/stared">
+              <i class="material-icons"></i>
+              <p>Stared</p>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/bin">
+              <i class="material-icons"></i>
+              <p>Bin</p>
+            </router-link>
+          </li>
+        </ul>
+      </div>
     </div>
-    <router-view/>
+    
+    <router-view />
+
   </div>
 </template>
 
+<script>
+export default {
+  
+}
+</script>
+
+
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
