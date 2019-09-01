@@ -1,9 +1,10 @@
 <template>
-<div class="main-panel">
+  <div class="main-panel">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top">
       <div class="container-fluid">
         <div class="navbar-wrapper">
+          <i class="material-icons fa fa-hdd-o fa-2x" aria-hidden="true"></i>
           <a class="navbar-brand" href="#pablo">My Drive</a>
         </div>
         <button
@@ -49,8 +50,16 @@
     </nav>
     <div class="content">
       <div class="container-fluid">
-        <div class="mydrive">
-          <HelloWorld msg="Welcome to my drive" />
+        <div class="row">
+          <div class="col-lg-3 col-md-6 col-sm-6" v-for="Document in Documents" v-bind:key="Document.id">
+            <Card :document="Document" />
+          </div>
+          <!-- <div class="col-lg-3 col-md-6 col-sm-6">
+            <Card :document="Documents[1]" />
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <Card :document="Documents[2]" />
+          </div> -->
         </div>
       </div>
     </div>
@@ -58,13 +67,18 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
+import Documents from "@/data/documents.js";
+import HelloWorld from "@/components/HelloWorld.vue";
+import Card from "@/components/Card.vue";
 
 export default {
-  name: 'mydrive',
+  name: "mydrive",
+  data() {
+    return { Documents };
+  },
   components: {
     HelloWorld,
-  },
+    Card
+  }
 };
 </script>

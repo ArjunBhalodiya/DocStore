@@ -4,6 +4,7 @@
     <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top">
       <div class="container-fluid">
         <div class="navbar-wrapper">
+          <i class="material-icons fa fa-share-alt fa-2x" aria-hidden="true"></i>
           <a class="navbar-brand" href="#pablo">Shared With Me</a>
         </div>
         <button
